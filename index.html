@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 92%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4682b4;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="login" placeholder="Usuário" />
+        <input type="password" id="senha" placeholder="Senha" />
+        <button id="auth" onclick="autenticar()">Entrar</button>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <script>
+        var usInput = document.getElementById("login");
+        usInput.addEventListener("keypress",function(event){
+            if(event.key==="Enter"){
+                event.preventDefault();
+                document.getElementById("auth").click();
+            }
+        });
+        var pwInput = document.getElementById("senha");
+        pwInput.addEventListener("keypress",function(event){
+            if(event.key==="Enter"){
+                event.preventDefault();
+                document.getElementById("auth").click();
+            }
+        });
+
+
+        async function autenticar() {
+            const login = document.getElementById("login").value;
+            const senha = document.getElementById("senha").value;
+            const errorMessage = document.getElementById("error-message");
+
+            try {
+                const response = await fetch("http://seu_ip:sua_porta/api/v1/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ login, senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Armazena o tipo do usuário localmente
+                    localStorage.setItem("tipoUsuario", data.tipo);
+                    console.log(data.tipo)
+                    alert("Login realizado com sucesso!");
+                    window.location.href = "controle.html";
+                } else {
+                    errorMessage.textContent = data.error;
+                }
+            } catch (error) {
+                console.error(error);
+                errorMessage.textContent = "Erro ao conectar com o servidor.";
+            }
+        }
+    </script>
+</body>
+</html>
